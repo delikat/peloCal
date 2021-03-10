@@ -44,7 +44,7 @@ function fetchPeloton(pelotonId) {
   return parsedRes;
 }
 
-function main() {
+function doGet(request) {
   const scriptProps = PropertiesService.getScriptProperties();
   let { peloUser, peloPass, sessionId } = scriptProps.getProperties();
 
@@ -57,5 +57,8 @@ function main() {
   const customReservations = reservations
     .map(res => fetchPeloton(res.peloton_id))
     .filter(peloton => peloton.is_session);
-  console.log(customReservations);
+
+  return ContentService.createTextOutput(
+    JSON.stringify(customReservations)
+  ).setMimeType(ContentService.MimeType.JSON);
 }
