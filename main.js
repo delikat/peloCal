@@ -16,11 +16,21 @@ function loginToPeloton(username, password) {
   return data.session_id;
 }
 
-function getReservations(sessionId) {
-  console.log(sessionId)
+function fetchReservations(sessionId) {
   const res = UrlFetchApp.fetch('https://api.onepeloton.com/api/user/reservations', {
     headers: {
       'Cookie': `peloton_session_id=${sessionId};`,
+      'peloton-platform-header': 'web',
+    },
+  });
+  const parsedRes = JSON.parse(res.getContentText());
+  return parsedRes.data;
+}
+
+function fetchPeloton(pelotonId) {
+  const res = UrlFetchApp.fetch(`https://api.onepeloton.com/api/peloton/${pelotonId}`, {
+    headers: {
+      'Cookie': `peloton_session_id=${pelotonId};`,
       'peloton-platform-header': 'web',
     },
   });
@@ -37,6 +47,6 @@ function main() {
     scriptProps.setProperty('sessionId', sessionId);
   }
 
-  const reservations = getReservations(sessionId);
-  console.log(reservations);
+  const reservations = fetchReservations(sessionId);
+  console.log(fetchPeloton(reservations[0].peloton_id));
 }
