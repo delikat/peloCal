@@ -7,9 +7,9 @@ function loginToPeloton(username, password) {
   };
 
   const res = UrlFetchApp.fetch('https://api.onepeloton.com/auth/login', {
-    'method': 'post',
-    'contentType': 'application/json',
-    'payload' : JSON.stringify(payload),
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify(payload),
   });
   const data = JSON.parse(res.getContentText());
 
@@ -17,23 +17,29 @@ function loginToPeloton(username, password) {
 }
 
 function fetchReservations(sessionId) {
-  const res = UrlFetchApp.fetch('https://api.onepeloton.com/api/user/reservations', {
-    headers: {
-      'Cookie': `peloton_session_id=${sessionId};`,
-      'peloton-platform-header': 'web',
-    },
-  });
+  const res = UrlFetchApp.fetch(
+    'https://api.onepeloton.com/api/user/reservations',
+    {
+      headers: {
+        Cookie: `peloton_session_id=${sessionId};`,
+        'peloton-platform-header': 'web',
+      },
+    }
+  );
   const parsedRes = JSON.parse(res.getContentText());
   return parsedRes.data;
 }
 
 function fetchPeloton(pelotonId) {
-  const res = UrlFetchApp.fetch(`https://api.onepeloton.com/api/peloton/${pelotonId}`, {
-    headers: {
-      'Cookie': `peloton_session_id=${pelotonId};`,
-      'peloton-platform-header': 'web',
-    },
-  });
+  const res = UrlFetchApp.fetch(
+    `https://api.onepeloton.com/api/peloton/${pelotonId}`,
+    {
+      headers: {
+        Cookie: `peloton_session_id=${pelotonId};`,
+        'peloton-platform-header': 'web',
+      },
+    }
+  );
   const parsedRes = JSON.parse(res.getContentText());
   return parsedRes;
 }
@@ -48,5 +54,8 @@ function main() {
   }
 
   const reservations = fetchReservations(sessionId);
-  console.log(fetchPeloton(reservations[0].peloton_id));
+  const customReservations = reservations
+    .map(res => fetchPeloton(res.peloton_id))
+    .filter(peloton => peloton.is_session);
+  console.log(customReservations);
 }
