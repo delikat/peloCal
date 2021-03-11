@@ -46,7 +46,7 @@ function fetchPeloton(sessionId, pelotonId) {
 
 function fetchRide(sessionId, rideId) {
   const res = UrlFetchApp.fetch(
-    `https://api.onepeloton.com/api/ride/${rideId}`,
+    `https://api.onepeloton.com/api/ride/${rideId}/details`,
     {
       headers: {
         Cookie: `peloton_session_id=${sessionId};`,
@@ -69,17 +69,15 @@ function main() {
 
   const scheduledRides = fetchReservations(sessionId)
     .map(({ peloton_id }) => fetchPeloton(sessionId, peloton_id))
-    .map(peloton => {
-      const { description, duration, title } = fetchRide(
-        sessionId,
-        peloton.ride_id
-      );
+    .map(({ id, ride_id: rideId, scheduled_start_time: startTime }) => {
+      const { ride } = fetchRide(sessionId, rideId);
       return {
-        id: peloton.id,
-        startTime: new Date(peloton.scheduled_start_time * 1000),
-        description,
-        duration,
-        title,
+        id,
+        startTime,
+        description: ride.description,
+        duration: ride.duration,
+        instructorName: ride.instructor.name,
+        title: ride.title,
       };
     });
 
