@@ -30,7 +30,7 @@ function fetchReservations(sessionId) {
   return parsedRes.data;
 }
 
-function fetchPeloton(pelotonId) {
+function fetchPeloton(sessionId, pelotonId) {
   const res = UrlFetchApp.fetch(
     `https://api.onepeloton.com/api/peloton/${pelotonId}`,
     {
@@ -44,7 +44,21 @@ function fetchPeloton(pelotonId) {
   return parsedRes;
 }
 
-function doGet(request) {
+function fetchRide(sessionId, rideId) {
+  const res = UrlFetchApp.fetch(
+    `https://api.onepeloton.com/api/ride/${rideId}`,
+    {
+      headers: {
+        Cookie: `peloton_session_id=${sessionId};`,
+        'peloton-platform-header': 'web',
+      },
+    }
+  );
+  const parsedRes = JSON.parse(res.getContentText());
+  return parsedRes;
+}
+
+function main() {
   const scriptProps = PropertiesService.getScriptProperties();
   let { peloUser, peloPass, sessionId } = scriptProps.getProperties();
 
@@ -53,12 +67,21 @@ function doGet(request) {
     scriptProps.setProperty('sessionId', sessionId);
   }
 
-  const reservations = fetchReservations(sessionId);
-  const customReservations = reservations
-    .map(res => fetchPeloton(res.peloton_id))
-    .filter(peloton => peloton.is_session);
+  const scheduledRides = fetchReservations(sessionId)
+    .map(({ peloton_id }) => fetchPeloton(sessionId, peloton_id))
+    .map(peloton => {
+      const { description, duration, title } = fetchRide(
+        sessionId,
+        peloton.ride_id
+      );
+      return {
+        id: peloton.id,
+        startTime: new Date(peloton.scheduled_start_time * 1000),
+        description,
+        duration,
+        title,
+      };
+    });
 
-  return ContentService.createTextOutput(
-    JSON.stringify(customReservations)
-  ).setMimeType(ContentService.MimeType.JSON);
+  console.log(scheduledRides);
 }
