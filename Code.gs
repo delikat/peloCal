@@ -81,5 +81,23 @@ function main() {
       };
     });
 
-  console.log(scheduledRides);
+  scheduledRides.forEach(ride => {
+    const startDate = new Date(ride.startTime * 1000);
+    console.log(ride);
+    CalendarApp.createEvent(
+      `${ride.title} with ${ride.instructorName}`,
+      startDate,
+      new Date(startDate.getTime() + ride.duration * 1000),
+      {
+        description: ride.description,
+      }
+    );
+  });
+
+  // const now = new Date();
+  // const endDate = new Date();
+  // endDate.setDate(endDate.getDate() + 14);
+
+  // const events = CalendarApp.getDefaultCalendar().getEvents(now, endDate);
+  // console.log(events.map(event => event.getTitle()));
 }
