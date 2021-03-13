@@ -27,8 +27,7 @@ function fetchFromApi(sessionId, path) {
       'peloton-platform-header': 'web',
     },
   });
-  const parsedRes = JSON.parse(res.getContentText());
-  return parsedRes;
+  return JSON.parse(res.getContentText());
 }
 
 function fetchPeloton(sessionId, pelotonId) {
@@ -62,10 +61,14 @@ function createEventFromRide(ride) {
 
 function main() {
   const scriptProps = PropertiesService.getScriptProperties();
-  let { peloUser, peloPass, sessionId } = scriptProps.getProperties();
+  let {
+    pelotonUsername,
+    pelotonPassword,
+    sessionId,
+  } = scriptProps.getProperties();
 
   if (!sessionId) {
-    sessionId = loginToPeloton(peloUser, peloPass);
+    sessionId = loginToPeloton(pelotonUsername, pelotonPassword);
     scriptProps.setProperty('sessionId', sessionId);
   }
 
