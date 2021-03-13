@@ -1,3 +1,4 @@
+const API_BASE_PATH = 'https://api.onepeloton.com';
 // String appended to event descriptions, used to identify peloCal events
 const EVENT_DESCRIPTION_SIGNATURE = '(Automatically created by peloCal)';
 
@@ -9,7 +10,7 @@ function loginToPeloton(username, password) {
     username_or_email: username,
   };
 
-  const res = UrlFetchApp.fetch('https://api.onepeloton.com/auth/login', {
+  const res = UrlFetchApp.fetch(`${API_BASE_PATH}/auth/login`, {
     method: 'post',
     contentType: 'application/json',
     payload: JSON.stringify(payload),
@@ -19,46 +20,41 @@ function loginToPeloton(username, password) {
   return data.session_id;
 }
 
-function fetchReservations(sessionId) {
-  const res = UrlFetchApp.fetch(
-    'https://api.onepeloton.com/api/user/reservations',
-    {
-      headers: {
-        Cookie: `peloton_session_id=${sessionId};`,
-        'peloton-platform-header': 'web',
-      },
-    }
-  );
+function fetchFromApi(sessionId, path) {
+  const res = UrlFetchApp.fetch(`${API_BASE_PATH}${path}`, {
+    headers: {
+      Cookie: `peloton_session_id=${sessionId};`,
+      'peloton-platform-header': 'web',
+    },
+  });
   const parsedRes = JSON.parse(res.getContentText());
-  return parsedRes.data;
+  return parsedRes;
+}
+
+function fetchReservations(sessionId) {
+  return fetchFromApi(sessionId, '/api/user/reservations').data;
 }
 
 function fetchPeloton(sessionId, pelotonId) {
-  const res = UrlFetchApp.fetch(
-    `https://api.onepeloton.com/api/peloton/${pelotonId}`,
-    {
-      headers: {
-        Cookie: `peloton_session_id=${sessionId};`,
-        'peloton-platform-header': 'web',
-      },
-    }
-  );
-  const parsedRes = JSON.parse(res.getContentText());
-  return parsedRes;
+  return fetchFromApi(sessionId, `/api/peloton/${pelotonId}`);
 }
 
 function fetchRide(sessionId, rideId) {
-  const res = UrlFetchApp.fetch(
-    `https://api.onepeloton.com/api/ride/${rideId}/details`,
+  return fetchFromApi(sessionId, `/api/ride/${rideId}/details`);
+}
+
+function createEventFromRide(ride) {
+  const startDate = new Date(ride.startTime * 1000);
+  const newEvent = CalendarApp.createEvent(
+    `${ride.title} with ${ride.instructorName}`,
+    startDate,
+    new Date(startDate.getTime() + ride.duration * 1000),
     {
-      headers: {
-        Cookie: `peloton_session_id=${sessionId};`,
-        'peloton-platform-header': 'web',
-      },
+      description: `${ride.description}\n\n${EVENT_DESCRIPTION_SIGNATURE}`,
     }
   );
-  const parsedRes = JSON.parse(res.getContentText());
-  return parsedRes;
+  newEvent.setTag('pelotonId', ride.id);
+  return newEvent;
 }
 
 function main() {
@@ -88,22 +84,14 @@ function main() {
   const now = new Date();
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + 14);
-  const existingEventIds = CalendarApp.getDefaultCalendar()
+  const existingRideIds = CalendarApp.getDefaultCalendar()
     .getEvents(now, endDate, { search: EVENT_DESCRIPTION_SIGNATURE })
     .map(event => event.getTag('pelotonId'));
 
+  // add new rides to the calendar
   scheduledRides.forEach(ride => {
-    if (!existingEventIds.includes(ride.id)) {
-      const startDate = new Date(ride.startTime * 1000);
-      const newEvent = CalendarApp.createEvent(
-        `${ride.title} with ${ride.instructorName}`,
-        startDate,
-        new Date(startDate.getTime() + ride.duration * 1000),
-        {
-          description: `${ride.description}\n\n${EVENT_DESCRIPTION_SIGNATURE}`,
-        }
-      );
-      newEvent.setTag('pelotonId', ride.id);
+    if (!existingRideIds.includes(ride.id)) {
+      createEventFromRide(ride);
     }
   });
 }
