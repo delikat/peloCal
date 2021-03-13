@@ -1,3 +1,6 @@
+// String appended to event descriptions, used to identify peloCal events
+const EVENT_DESCRIPTION_SIGNATURE = '(Automatically created by peloCal)';
+
 function loginToPeloton(username, password) {
   console.log('attempting to auth');
 
@@ -35,7 +38,7 @@ function fetchPeloton(sessionId, pelotonId) {
     `https://api.onepeloton.com/api/peloton/${pelotonId}`,
     {
       headers: {
-        Cookie: `peloton_session_id=${pelotonId};`,
+        Cookie: `peloton_session_id=${sessionId};`,
         'peloton-platform-header': 'web',
       },
     }
@@ -86,7 +89,7 @@ function main() {
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + 14);
   const existingEventIds = CalendarApp.getDefaultCalendar()
-    .getEvents(now, endDate, { search: '(Automatically created by peloCal)' })
+    .getEvents(now, endDate, { search: EVENT_DESCRIPTION_SIGNATURE })
     .map(event => event.getTag('pelotonId'));
 
   scheduledRides.forEach(ride => {
@@ -97,7 +100,7 @@ function main() {
         startDate,
         new Date(startDate.getTime() + ride.duration * 1000),
         {
-          description: `${ride.description}\n\n(Automatically created by peloCal)`,
+          description: `${ride.description}\n\n${EVENT_DESCRIPTION_SIGNATURE}`,
         }
       );
       newEvent.setTag('pelotonId', ride.id);
