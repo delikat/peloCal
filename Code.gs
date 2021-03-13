@@ -77,7 +77,7 @@ function main() {
     .map(peloton => {
       const { ride } = fetchRide(sessionId, peloton.ride_id);
 
-      // Session rides' scheduled_start_time is one minute early, so prefer pedaling_start_time
+      // Session rides' scheduled_start_times are one minute early, so prefer pedaling_start_time
       const startTime = peloton.is_session
         ? peloton.pedaling_start_time
         : peloton.scheduled_start_time;
@@ -91,18 +91,29 @@ function main() {
         title: ride.title,
       };
     });
+  const scheduledRideIds = scheduledRides.map(ride => ride.id);
 
   // get existing peloCal events from Google Calendar
   const now = new Date();
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + 14);
-  const existingRideIds = CalendarApp.getDefaultCalendar()
+  const existingRideIds = new Set();
+  CalendarApp.getDefaultCalendar()
     .getEvents(now, endDate, { search: EVENT_DESCRIPTION_SIGNATURE })
-    .map(event => event.getTag('pelotonId'));
+    .forEach(event => {
+      const id = event.getTag('pelotonId');
+      // delete calendar events for rides no longer on the schedule
+      if (!scheduledRideIds.includes(id)) {
+        console.log(`Deleting event for ride ${id}...`);
+        event.deleteEvent();
+        return;
+      }
+      existingRideIds.add(id);
+    });
 
   // add new rides to Google Calendar
   scheduledRides.forEach(ride => {
-    if (!existingRideIds.includes(ride.id)) {
+    if (!existingRideIds.has(ride.id)) {
       createEventFromRide(ride);
     }
   });
