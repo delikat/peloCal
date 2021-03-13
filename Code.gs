@@ -77,7 +77,7 @@ function main() {
     .map(peloton => {
       const { ride } = fetchRide(sessionId, peloton.ride_id);
 
-      // Session rides' scheduled_start_time is one minute early, so prefer pedaling_start_time
+      // Session rides' scheduled_start_times are one minute early, so prefer pedaling_start_time
       const startTime = peloton.is_session
         ? peloton.pedaling_start_time
         : peloton.scheduled_start_time;
