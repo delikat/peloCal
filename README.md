@@ -1,6 +1,6 @@
 # peloCal 🚲 📆
 
-A simple script that creates Google Calendar events for your scheduled Peloton classes, including both live classes and sessions.
+A simple script to synchronize your Peloton schedule with Google Calendar. peloCal works with both live classes and sessions across all activity types.
 
 ## Configuration
 
