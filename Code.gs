@@ -3,7 +3,7 @@ const API_BASE_PATH = 'https://api.onepeloton.com';
 const EVENT_DESCRIPTION_SIGNATURE = '(Automatically created by peloCal)';
 
 function loginToPeloton(username, password) {
-  console.log('attempting to auth');
+  console.log('Attempting to auth...');
 
   const payload = {
     password,
@@ -44,9 +44,11 @@ function fetchRide(sessionId, rideId) {
 }
 
 function createEventFromRide(ride) {
+  console.log(`Adding new event from ride ${ride.id}...`);
+  const eventTitle = `${ride.title} with ${ride.instructorName}`;
   const startDate = new Date(ride.startTime * 1000);
   const newEvent = CalendarApp.createEvent(
-    `${ride.title} with ${ride.instructorName}`,
+    eventTitle,
     startDate,
     new Date(startDate.getTime() + ride.duration * 1000),
     {
@@ -54,6 +56,7 @@ function createEventFromRide(ride) {
     }
   );
   newEvent.setTag('pelotonId', ride.id);
+  console.log(`Added ${eventTitle} at ${startDate.toUTCString()}`);
   return newEvent;
 }
 
