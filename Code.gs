@@ -31,12 +31,12 @@ function fetchFromApi(sessionId, path) {
   return parsedRes;
 }
 
-function fetchReservations(sessionId) {
-  return fetchFromApi(sessionId, '/api/user/reservations').data;
-}
-
 function fetchPeloton(sessionId, pelotonId) {
   return fetchFromApi(sessionId, `/api/peloton/${pelotonId}`);
+}
+
+function fetchReservations(sessionId) {
+  return fetchFromApi(sessionId, '/api/user/reservations').data;
 }
 
 function fetchRide(sessionId, rideId) {
@@ -80,7 +80,7 @@ function main() {
       };
     });
 
-  // get existing peloCal events
+  // get existing peloCal events from Google Calendar
   const now = new Date();
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + 14);
@@ -88,7 +88,7 @@ function main() {
     .getEvents(now, endDate, { search: EVENT_DESCRIPTION_SIGNATURE })
     .map(event => event.getTag('pelotonId'));
 
-  // add new rides to the calendar
+  // add new rides to Google Calendar
   scheduledRides.forEach(ride => {
     if (!existingRideIds.includes(ride.id)) {
       createEventFromRide(ride);
