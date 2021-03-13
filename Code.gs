@@ -71,11 +71,17 @@ function main() {
 
   const scheduledRides = fetchReservations(sessionId)
     .map(({ peloton_id }) => fetchPeloton(sessionId, peloton_id))
-    .map(({ id, ride_id: rideId, scheduled_start_time: startTime }) => {
-      const { ride } = fetchRide(sessionId, rideId);
+    .map(peloton => {
+      const { ride } = fetchRide(sessionId, peloton.ride_id);
+
+      // Session rides' scheduled_start_time is one minute early, so prefer pedaling_start_time
+      const startTime = peloton.is_session
+        ? peloton.pedaling_start_time
+        : peloton.scheduled_start_time;
+
       return {
-        id,
         startTime,
+        id: peloton.id,
         description: ride.description,
         duration: ride.duration,
         instructorName: ride.instructor.name,
