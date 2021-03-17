@@ -13,13 +13,19 @@ const EVENT_ID_TAG = 'pelotonId';
 
 // Time (in minutes) a reminder will be created before each event. Set to 0 for no reminders
 const REMINDER_MINUTES_BEFORE = 5;
+
+// Exact name of the Google Calendar in which events will be created. Leave blank for default calendar
+const TARGET_CALENDAR_NAME = '';
 // =====================
 
-function createEventFromRide(ride): GoogleAppsScript.Calendar.CalendarEvent {
+function createEventFromRide(
+  calendar: GoogleAppsScript.Calendar.Calendar,
+  ride
+): GoogleAppsScript.Calendar.CalendarEvent {
   console.log(`Adding new event from ride ${ride.id}...`);
   const eventTitle = `${ride.title} with ${ride.instructorName}`;
   const startDate = new Date(ride.startTime * 1000);
-  const newEvent = CalendarApp.createEvent(
+  const newEvent = calendar.createEvent(
     eventTitle,
     startDate,
     new Date(startDate.getTime() + ride.duration * 1000),
@@ -76,7 +82,10 @@ function main() {
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + 14);
   const existingRideIds = new Set();
-  CalendarApp.getDefaultCalendar()
+  const calendar = TARGET_CALENDAR_NAME
+    ? CalendarApp.getCalendarsByName(TARGET_CALENDAR_NAME)[0]
+    : CalendarApp.getDefaultCalendar();
+  calendar
     .getEvents(now, endDate, { search: EVENT_DESCRIPTION_SIGNATURE })
     .forEach(event => {
       const id = event.getTag(EVENT_ID_TAG);
@@ -92,7 +101,7 @@ function main() {
   // add new rides to Google Calendar
   scheduledRides.forEach(ride => {
     if (!existingRideIds.has(ride.id)) {
-      createEventFromRide(ride);
+      createEventFromRide(calendar, ride);
     }
   });
 }
