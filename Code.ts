@@ -1,6 +1,7 @@
 const API_BASE_PATH = 'https://api.onepeloton.com';
 // String appended to event descriptions, used to identify peloCal events
 const EVENT_DESCRIPTION_SIGNATURE = '(Automatically created by peloCal)';
+const EVENT_ID_TAG = 'pelotonId';
 
 function createEventFromRide(ride) {
   console.log(`Adding new event from ride ${ride.id}...`);
@@ -14,7 +15,7 @@ function createEventFromRide(ride) {
       description: `${ride.description}\n\n${EVENT_DESCRIPTION_SIGNATURE}`,
     }
   );
-  newEvent.setTag('pelotonId', ride.id);
+  newEvent.setTag(EVENT_ID_TAG, ride.id);
   console.log(`Added ${eventTitle} at ${startDate.toUTCString()}`);
   return newEvent;
 }
@@ -61,7 +62,7 @@ function main() {
   CalendarApp.getDefaultCalendar()
     .getEvents(now, endDate, { search: EVENT_DESCRIPTION_SIGNATURE })
     .forEach(event => {
-      const id = event.getTag('pelotonId');
+      const id = event.getTag(EVENT_ID_TAG);
       // delete calendar events for rides no longer on the schedule
       if (!scheduledRideIds.includes(id)) {
         console.log(`Deleting event for ride ${id}...`);
