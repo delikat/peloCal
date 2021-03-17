@@ -2,6 +2,10 @@ const API_BASE_PATH = 'https://api.onepeloton.com';
 // String appended to event descriptions, used to identify peloCal events
 const EVENT_DESCRIPTION_SIGNATURE = '(Automatically created by peloCal)';
 
+function isSessionValid(sessionId) {
+  return fetchFromApi(sessionId, '/auth/check_session').is_authed;
+}
+
 function loginToPeloton(username, password) {
   console.log('Attempting to auth...');
 
@@ -67,7 +71,7 @@ function main() {
     sessionId,
   } = scriptProps.getProperties();
 
-  if (!sessionId) {
+  if (!sessionId || !isSessionValid(sessionId)) {
     sessionId = loginToPeloton(pelotonUsername, pelotonPassword);
     scriptProps.setProperty('sessionId', sessionId);
   }
