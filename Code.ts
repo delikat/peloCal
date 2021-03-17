@@ -3,7 +3,7 @@ const API_BASE_PATH = 'https://api.onepeloton.com';
 const EVENT_DESCRIPTION_SIGNATURE = '(Automatically created by peloCal)';
 const EVENT_ID_TAG = 'pelotonId';
 
-function createEventFromRide(ride) {
+function createEventFromRide(ride): GoogleAppsScript.Calendar.CalendarEvent {
   console.log(`Adding new event from ride ${ride.id}...`);
   const eventTitle = `${ride.title} with ${ride.instructorName}`;
   const startDate = new Date(ride.startTime * 1000);
