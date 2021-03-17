@@ -1,8 +1,8 @@
-function isSessionValid(sessionId: String) {
+function isSessionValid(sessionId: string): boolean {
   return fetchFromApi(sessionId, '/auth/check_session').is_authed;
 }
 
-function loginToPeloton(username: String, password: String) {
+function loginToPeloton(username: string, password: string): string {
   console.log('Attempting to auth...');
 
   const payload = {
@@ -20,7 +20,7 @@ function loginToPeloton(username: String, password: String) {
   return data.session_id;
 }
 
-function fetchFromApi(sessionId: String, path: String) {
+function fetchFromApi(sessionId: string, path: string) {
   const res = UrlFetchApp.fetch(`${API_BASE_PATH}${path}`, {
     headers: {
       Cookie: `peloton_session_id=${sessionId};`,
@@ -30,14 +30,14 @@ function fetchFromApi(sessionId: String, path: String) {
   return JSON.parse(res.getContentText());
 }
 
-function fetchPeloton(sessionId: String, pelotonId: String) {
+function fetchPeloton(sessionId: string, pelotonId: string) {
   return fetchFromApi(sessionId, `/api/peloton/${pelotonId}`);
 }
 
-function fetchReservations(sessionId: String) {
+function fetchReservations(sessionId: string) {
   return fetchFromApi(sessionId, '/api/user/reservations').data;
 }
 
-function fetchRide(sessionId: String, rideId: String) {
+function fetchRide(sessionId: string, rideId: string) {
   return fetchFromApi(sessionId, `/api/ride/${rideId}/details`);
 }
