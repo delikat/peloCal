@@ -2,9 +2,9 @@
 
 A simple script to synchronize your Peloton schedule with Google Calendar. peloCal works with both live classes and sessions across all activity types.
 
-## Configuration
+## Setup
 
-1. Copy [Code.gs](Code.gs) to your own [Google Apps Script](https://script.google.com) project.
+1. Make a copy of [the deployed script](https://script.google.com/d/1Hc9ncp32lwjjKcR0XCB6QjZAQep0BpRE1mFQkmzMDwp9a711mCYEAmAb/edit?usp=sharing) to your Google account by choosing the Overview tab then clicking the Copy icon on the top right.
 2. Store your Peloton credentials in the `pelotonUsername` and `pelotonPassword` script properties. This unfortunately requires switching to the legacy editor.
 3. Deploy your project and set up a [time-driven trigger](https://developers.google.com/apps-script/guides/triggers/installable#time-driven_triggers) so it runs automatically.
 
@@ -17,7 +17,6 @@ A simple script to synchronize your Peloton schedule with Google Calendar. peloC
 ## TODO / Feature Ideas
 
 - [ ] Improve README with a step-by-step setup guide
-- [ ] Better exception handling around HTTP requests and authentication
 - [ ] Output an .ics file for compatibility with non-Google calendar apps
 
 ---
