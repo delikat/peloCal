@@ -1,7 +1,19 @@
+// =====================
+//     Configuration
+// =====================
+
+// Base path for the Peloton API
 const API_BASE_PATH = 'https://api.onepeloton.com';
+
 // String appended to event descriptions, used to identify peloCal events
 const EVENT_DESCRIPTION_SIGNATURE = '(Automatically created by peloCal)';
+
+// Tag name used on Google Calendar events to store Peloton IDs
 const EVENT_ID_TAG = 'pelotonId';
+
+// Time (in minutes) a reminder will be created before each event. Set to 0 for no reminders
+const REMINDER_MINUTES_BEFORE = 5;
+// =====================
 
 function createEventFromRide(ride): GoogleAppsScript.Calendar.CalendarEvent {
   console.log(`Adding new event from ride ${ride.id}...`);
@@ -15,6 +27,11 @@ function createEventFromRide(ride): GoogleAppsScript.Calendar.CalendarEvent {
       description: `${ride.description}\n\n${EVENT_DESCRIPTION_SIGNATURE}`,
     }
   );
+
+  if (REMINDER_MINUTES_BEFORE) {
+    newEvent.addPopupReminder(REMINDER_MINUTES_BEFORE);
+  }
+
   newEvent.setTag(EVENT_ID_TAG, ride.id);
   console.log(`Added ${eventTitle} at ${startDate.toUTCString()}`);
   return newEvent;
