@@ -2,11 +2,11 @@ const API_BASE_PATH = 'https://api.onepeloton.com';
 // String appended to event descriptions, used to identify peloCal events
 const EVENT_DESCRIPTION_SIGNATURE = '(Automatically created by peloCal)';
 
-function isSessionValid(sessionId) {
+function isSessionValid(sessionId: String) {
   return fetchFromApi(sessionId, '/auth/check_session').is_authed;
 }
 
-function loginToPeloton(username, password) {
+function loginToPeloton(username: String, password: String) {
   console.log('Attempting to auth...');
 
   const payload = {
@@ -24,7 +24,7 @@ function loginToPeloton(username, password) {
   return data.session_id;
 }
 
-function fetchFromApi(sessionId, path) {
+function fetchFromApi(sessionId: String, path: String) {
   const res = UrlFetchApp.fetch(`${API_BASE_PATH}${path}`, {
     headers: {
       Cookie: `peloton_session_id=${sessionId};`,
@@ -34,15 +34,15 @@ function fetchFromApi(sessionId, path) {
   return JSON.parse(res.getContentText());
 }
 
-function fetchPeloton(sessionId, pelotonId) {
+function fetchPeloton(sessionId: String, pelotonId: String) {
   return fetchFromApi(sessionId, `/api/peloton/${pelotonId}`);
 }
 
-function fetchReservations(sessionId) {
+function fetchReservations(sessionId: String) {
   return fetchFromApi(sessionId, '/api/user/reservations').data;
 }
 
-function fetchRide(sessionId, rideId) {
+function fetchRide(sessionId: String, rideId: String) {
   return fetchFromApi(sessionId, `/api/ride/${rideId}/details`);
 }
 
