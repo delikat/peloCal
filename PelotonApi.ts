@@ -1,5 +1,5 @@
 function isSessionValid(sessionId: string): boolean {
-  return fetchFromApi(sessionId, '/auth/check_session').is_authed;
+  return fetchFromApi(sessionId, '/auth/check_session').is_valid;
 }
 
 function loginToPeloton(username: string, password: string): string {
