@@ -12,7 +12,8 @@ A simple script to synchronize your Peloton schedule with Google Calendar. peloC
 	2. "Select event source" should be set to `Time-driven`
 	2. "Select type of time based trigger" should be set to `Minutes Timer`
 	3. "Select minute interval" should be set to `Every 10 Minutes`
-4. Check for successful/failed executions under **Executions** on the left menu
+4. Update the `timeZone` to your timezone ([see list](https://joda-time.sourceforge.net/timezones.html)) in `appsscript.json` in the **Editor** (this ensures events in the past do not accidently get deleted)
+5. Check for successful/failed executions under **Executions** on the left menu 
 
 ## Contributing & Testing
 
@@ -37,7 +38,6 @@ If you would like to make changes to this script and deploy them to Google Apps 
 
 ## Todo
 
-- [ ] Don't delete (or include an option not to delete) calendar events for rides/workouts that have already past (allowing you to see what workouts you did in the past in your Google Calendar).
 - [ ] Output an .ics file for compatibility with non-Google calendar apps.
 
 ---
