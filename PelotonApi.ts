@@ -1,7 +1,27 @@
+// ========================
+//     Peloton API Code
+// ========================
+
+// Base path for the Peloton API
+const API_BASE_PATH = 'https://api.onepeloton.com';
+
+// Build API call
+function fetchFromApi(sessionId: string, path: string) {
+  const res = UrlFetchApp.fetch(`${API_BASE_PATH}${path}`, {
+    headers: {
+      Cookie: `peloton_session_id=${sessionId};`,
+      'peloton-platform-header': 'web',
+    },
+  });
+  return JSON.parse(res.getContentText());
+}
+
+// Check if we are authenticated in Peloton with a valid session
 function isSessionValid(sessionId: string): boolean {
   return fetchFromApi(sessionId, '/auth/check_session').is_valid;
 }
 
+// Log in to Peloton using username/password
 function loginToPeloton(username: string, password: string): string {
   console.log('Attempting to auth...');
 
@@ -20,24 +40,17 @@ function loginToPeloton(username: string, password: string): string {
   return data.session_id;
 }
 
-function fetchFromApi(sessionId: string, path: string) {
-  const res = UrlFetchApp.fetch(`${API_BASE_PATH}${path}`, {
-    headers: {
-      Cookie: `peloton_session_id=${sessionId};`,
-      'peloton-platform-header': 'web',
-    },
-  });
-  return JSON.parse(res.getContentText());
-}
-
-function fetchPeloton(sessionId: string, pelotonId: string) {
-  return fetchFromApi(sessionId, `/api/peloton/${pelotonId}`);
-}
-
+// Get a list of all reservations (scheduled Peloton rides/workouts)
 function fetchReservations(sessionId: string) {
   return fetchFromApi(sessionId, '/api/user/reservations').data;
 }
 
+// Get a single reservation (scheduled Peloton ride/workout)
+function fetchPeloton(sessionId: string, pelotonId: string) {
+  return fetchFromApi(sessionId, `/api/peloton/${pelotonId}`);
+}
+
+// Get a Peloton ride/workout class details
 function fetchRide(sessionId: string, rideId: string) {
   return fetchFromApi(sessionId, `/api/ride/${rideId}/details`);
 }

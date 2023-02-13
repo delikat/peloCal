@@ -2,9 +2,6 @@
 //     Configuration
 // =====================
 
-// Base path for the Peloton API
-const API_BASE_PATH = 'https://api.onepeloton.com';
-
 // String appended to event descriptions, used to identify peloCal events
 const EVENT_DESCRIPTION_SIGNATURE = '(Automatically created by peloCal)';
 
