@@ -8,7 +8,7 @@ A simple script to synchronize your Peloton schedule with Google Calendar. peloC
 2. Store your Peloton credentials in the `pelotonUsername` and `pelotonPassword` script properties under **Project Settings** > **Script Properties**
 3. Deploy your project (optional). If you don't deploy/version your project the Head deployment will be used.
 4. Set up a [time-driven trigger](https://developers.google.com/apps-script/guides/triggers/installable#time-driven_triggers) under **Triggers** on the left menu so it runs automatically. Below is an example on setting the script to run every 10 minutes:
-	1. "Choose which function to run" should be set to `main`
+	1. "Choose which function to run" should be set to `run`
 	2. "Select event source" should be set to `Time-driven`
 	2. "Select type of time based trigger" should be set to `Minutes Timer`
 	3. "Select minute interval" should be set to `Every 10 Minutes`

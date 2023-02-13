@@ -19,6 +19,11 @@ const TARGET_CALENDAR_NAME = '';
 
 // =====================
 
+// Function to select under "Choose which function to run" in Triggers
+function run() {
+	main();
+}
+
 function createEventFromRide(
   calendar: GoogleAppsScript.Calendar.Calendar,
   ride
