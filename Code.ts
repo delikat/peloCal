@@ -5,6 +5,9 @@
 // String appended to event descriptions, used to identify peloCal events
 const EVENT_DESCRIPTION_SIGNATURE = '(Automatically created by peloCal)';
 
+// Add a location to events (leave string empty for no location)
+const EVENT_LOCATION = 'Peloton';
+
 // Tag name used on Google Calendar events to store Peloton IDs
 const EVENT_ID_TAG = 'pelotonId';
 
@@ -13,6 +16,7 @@ const REMINDER_MINUTES_BEFORE = 5;
 
 // Exact name of the Google Calendar in which events will be created. Leave blank for default calendar
 const TARGET_CALENDAR_NAME = '';
+
 // =====================
 
 function createEventFromRide(
@@ -28,6 +32,7 @@ function createEventFromRide(
     new Date(startDate.getTime() + ride.duration * 1000),
     {
       description: `${ride.description}\n\n${EVENT_DESCRIPTION_SIGNATURE}`,
+      location: `${EVENT_LOCATION}`
     }
   );
 
