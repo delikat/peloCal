@@ -28,7 +28,7 @@ function createEventFromRide(
   calendar: GoogleAppsScript.Calendar.Calendar,
   ride
 ): GoogleAppsScript.Calendar.CalendarEvent {
-  console.log(`Adding new event from ride ${ride.id}...`);
+  console.log(`Adding new event from ride ${ride.title} (${ride.id})`);
   const eventTitle = `${ride.title} with ${ride.instructorName}`;
   const startDate = new Date(ride.startTime * 1000);
   const newEvent = calendar.createEvent(
