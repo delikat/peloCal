@@ -96,9 +96,10 @@ function main() {
     .getEvents(now, endDate, { search: EVENT_DESCRIPTION_SIGNATURE })
     .forEach(event => {
       const id = event.getTag(EVENT_ID_TAG);
+      const title = event.getTitle();
       // delete calendar events for rides no longer on the schedule
       if (!scheduledRideIds.includes(id)) {
-        console.log(`Deleting event for ride ${id}...`);
+        console.log(`Deleting event for ride ${title} (${id}).`);
         event.deleteEvent();
         return;
       }
