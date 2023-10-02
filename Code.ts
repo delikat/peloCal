@@ -21,7 +21,7 @@ const TARGET_CALENDAR_NAME = '';
 
 // Function to select under "Choose which function to run" in Triggers
 function run() {
-	main();
+  main();
 }
 
 function createEventFromRide(
@@ -100,11 +100,11 @@ function main() {
       const startTime = event.getStartTime();
       // delete calendar events for rides no longer on the schedule
       // check to see if the current start time is after current time
-      // ... since getEvents() will returns events that start during
+      // ... since getEvents() will return events that start during
       // ... the given time range, ends during the time range, or 
       // ... encompasses the time range. If the Apps Script trigger is set 
       // ... to a shorter time (5-30 minutes) it will remove scheduled
-      // ... workouts that have just started but not eneded.
+      // ... workouts that have just started but not ended.
       if (!scheduledRideIds.includes(id) && (now < startTime)) {
         console.log(`Deleting event for ride ${title} (${id}).`);
         event.deleteEvent();
