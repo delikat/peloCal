@@ -2,11 +2,11 @@
 //     Configuration
 // =====================
 
-// Base path for the Peloton API
-const API_BASE_PATH = 'https://api.onepeloton.com';
-
 // String appended to event descriptions, used to identify peloCal events
 const EVENT_DESCRIPTION_SIGNATURE = '(Automatically created by peloCal)';
+
+// Add a location to events (leave string empty for no location)
+const EVENT_LOCATION = 'Peloton';
 
 // Tag name used on Google Calendar events to store Peloton IDs
 const EVENT_ID_TAG = 'pelotonId';
@@ -16,13 +16,19 @@ const REMINDER_MINUTES_BEFORE = 5;
 
 // Exact name of the Google Calendar in which events will be created. Leave blank for default calendar
 const TARGET_CALENDAR_NAME = '';
+
 // =====================
+
+// Function to select under "Choose which function to run" in Triggers
+function run() {
+  main();
+}
 
 function createEventFromRide(
   calendar: GoogleAppsScript.Calendar.Calendar,
   ride
 ): GoogleAppsScript.Calendar.CalendarEvent {
-  console.log(`Adding new event from ride ${ride.id}...`);
+  console.log(`Adding new event from ride ${ride.title} (${ride.id})`);
   const eventTitle = `${ride.title} with ${ride.instructorName}`;
   const startDate = new Date(ride.startTime * 1000);
   const newEvent = calendar.createEvent(
@@ -31,6 +37,7 @@ function createEventFromRide(
     new Date(startDate.getTime() + ride.duration * 1000),
     {
       description: `${ride.description}\n\n${EVENT_DESCRIPTION_SIGNATURE}`,
+      location: `${EVENT_LOCATION}`
     }
   );
 
@@ -89,9 +96,17 @@ function main() {
     .getEvents(now, endDate, { search: EVENT_DESCRIPTION_SIGNATURE })
     .forEach(event => {
       const id = event.getTag(EVENT_ID_TAG);
+      const title = event.getTitle();
+      const startTime = event.getStartTime();
       // delete calendar events for rides no longer on the schedule
-      if (!scheduledRideIds.includes(id)) {
-        console.log(`Deleting event for ride ${id}...`);
+      // check to see if the current start time is after current time
+      // ... since getEvents() will return events that start during
+      // ... the given time range, ends during the time range, or 
+      // ... encompasses the time range. If the Apps Script trigger is set 
+      // ... to a shorter time (5-30 minutes) it will remove scheduled
+      // ... workouts that have just started but not ended.
+      if (!scheduledRideIds.includes(id) && (now < startTime)) {
+        console.log(`Deleting event for ride ${title} (${id}).`);
         event.deleteEvent();
         return;
       }

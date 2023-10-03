@@ -1,0 +1,5 @@
+{
+  "name": "peloCal",
+  "version": "1.0.0",
+  "description": "A simple script to synchronize your Peloton schedule with Google Calendar. peloCal works with both live classes and sessions across all activity types."
+}
